@@ -1,0 +1,7167 @@
+<!DOCTYPE html>
+
+<html lang="es">
+
+
+
+<head>
+
+  <base target="_top">
+
+
+
+  <meta
+
+    name="viewport"
+
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
+
+  >
+
+
+
+  <meta charset="UTF-8">
+
+
+
+  <title>DISAN - Checklist Almacén</title>
+
+
+
+  <style>
+
+    * {
+
+      box-sizing: border-box;
+
+    }
+
+
+
+    :root {
+
+      --azul: #1a73e8;
+
+      --azul-claro: #e8f0fe;
+
+      --verde: #188038;
+
+      --verde-claro: #e6f4ea;
+
+      --rojo: #b3261e;
+
+      --amarillo: #f9ab00;
+
+      --amarillo-claro: #fef7e0;
+
+      --texto: #202124;
+
+      --texto-secundario: #5f6368;
+
+      --borde: #dadce0;
+
+      --fondo: #f4f6f8;
+
+      --blanco: #ffffff;
+
+    }
+
+
+
+    body {
+
+      margin: 0;
+
+      font-family:
+
+        Arial,
+
+        Helvetica,
+
+        sans-serif;
+
+      background: var(--fondo);
+
+      color: var(--texto);
+
+    }
+
+
+
+    button,
+
+    input {
+
+      font: inherit;
+
+    }
+
+
+
+    button {
+
+      -webkit-tap-highlight-color: transparent;
+
+    }
+
+
+
+    /* ==========================================================
+
+       CABECERA
+
+       ========================================================== */
+
+
+
+    .header {
+
+      background: white;
+
+      border-bottom: 1px solid var(--borde);
+
+      position: sticky;
+
+      top: 0;
+
+      z-index: 100;
+
+    }
+
+
+
+    .header-contenido {
+
+      max-width: 1100px;
+
+      margin: auto;
+
+      padding: 14px 18px;
+
+    }
+
+
+
+    .titulo {
+
+      font-size: 21px;
+
+      font-weight: 800;
+
+    }
+
+
+
+    .subtitulo {
+
+      color: var(--texto-secundario);
+
+      font-size: 13px;
+
+      margin-top: 3px;
+
+    }
+
+
+
+    /* ==========================================================
+
+       CONTENEDOR
+
+       ========================================================== */
+
+
+
+    .contenedor {
+
+      max-width: 1100px;
+
+      margin: auto;
+
+      padding: 16px;
+
+      padding-bottom: 70px;
+
+    }
+
+
+
+    /* ==========================================================
+
+       SELECTOR DÍA
+
+       ========================================================== */
+
+
+
+    .selector-dia {
+
+      background: white;
+
+      border-radius: 14px;
+
+      padding: 16px;
+
+      box-shadow: 0 1px 4px rgba(0,0,0,.10);
+
+      margin-bottom: 14px;
+
+    }
+
+
+
+    .selector-titulo {
+
+      font-weight: 800;
+
+      margin-bottom: 12px;
+
+    }
+
+
+
+    .botones-dia {
+
+      display: grid;
+
+      grid-template-columns: repeat(3, 1fr);
+
+      gap: 8px;
+
+    }
+
+
+
+    .boton-dia {
+
+      border: 1px solid var(--borde);
+
+      background: white;
+
+      border-radius: 10px;
+
+      padding: 12px 8px;
+
+      cursor: pointer;
+
+      font-weight: 700;
+
+      color: var(--texto);
+
+    }
+
+
+
+    .boton-dia.activo {
+
+      background: var(--azul);
+
+      border-color: var(--azul);
+
+      color: white;
+
+    }
+
+
+
+    /* ==========================================================
+
+       CARGA / ERROR
+
+       ========================================================== */
+
+
+
+    .cargando {
+
+      display: none;
+
+      background: white;
+
+      padding: 35px 20px;
+
+      text-align: center;
+
+      border-radius: 14px;
+
+      box-shadow: 0 1px 4px rgba(0,0,0,.08);
+
+    }
+
+
+
+    .spinner {
+
+      width: 32px;
+
+      height: 32px;
+
+      border: 4px solid #e8eaed;
+
+      border-top-color: var(--azul);
+
+      border-radius: 50%;
+
+      margin: 0 auto 14px auto;
+
+      animation: girar .8s linear infinite;
+
+    }
+
+
+
+    @keyframes girar {
+
+      to {
+
+        transform: rotate(360deg);
+
+      }
+
+    }
+
+
+
+    .error {
+
+      display: none;
+
+      background: #fce8e6;
+
+      border: 1px solid #f28b82;
+
+      color: var(--rojo);
+
+      padding: 14px;
+
+      border-radius: 10px;
+
+      margin-bottom: 14px;
+
+      font-size: 14px;
+
+    }
+
+
+
+    #contenido {
+
+      display: none;
+
+    }
+
+
+
+    /* ==========================================================
+
+       RESUMEN
+
+       ========================================================== */
+
+
+
+    .resumen {
+
+      background: white;
+
+      border-radius: 14px;
+
+      padding: 17px;
+
+      margin-bottom: 14px;
+
+      box-shadow: 0 1px 4px rgba(0,0,0,.10);
+
+    }
+
+
+
+    .fecha-seleccionada {
+
+      color: var(--texto-secundario);
+
+      font-size: 13px;
+
+      margin-bottom: 6px;
+
+    }
+
+
+
+    .progreso-titulo {
+
+      font-size: 21px;
+
+      font-weight: 800;
+
+      margin-bottom: 10px;
+
+    }
+
+
+
+    .barra {
+
+      height: 12px;
+
+      background: #e8eaed;
+
+      border-radius: 20px;
+
+      overflow: hidden;
+
+    }
+
+
+
+    .barra-interna {
+
+      width: 0%;
+
+      height: 100%;
+
+      background: var(--verde);
+
+      transition: width .25s ease;
+
+    }
+
+
+
+    .chips {
+
+      display: flex;
+
+      flex-wrap: wrap;
+
+      gap: 7px;
+
+      margin-top: 12px;
+
+    }
+
+
+
+    .chip {
+
+      padding: 6px 9px;
+
+      background: #f1f3f4;
+
+      border-radius: 20px;
+
+      font-size: 12px;
+
+    }
+
+
+
+    /* ==========================================================
+
+       TABS
+
+       ========================================================== */
+
+
+
+    .tabs {
+
+      display: grid;
+
+      grid-template-columns: 1fr 1fr;
+
+      gap: 7px;
+
+      margin-bottom: 14px;
+
+      position: sticky;
+
+      top: 67px;
+
+      z-index: 90;
+
+      background: var(--fondo);
+
+      padding: 5px 0;
+
+    }
+
+
+
+    .tab {
+
+      border: 0;
+
+      padding: 12px 8px;
+
+      border-radius: 10px;
+
+      font-weight: 800;
+
+      background: #e8eaed;
+
+      cursor: pointer;
+
+    }
+
+
+
+    .tab.activo {
+
+      background: var(--texto);
+
+      color: white;
+
+    }
+
+
+
+    /* ==========================================================
+
+       CATEGORÍA
+
+       ========================================================== */
+
+
+
+    .categoria {
+
+      background: white;
+
+      border-radius: 14px;
+
+      overflow: hidden;
+
+      margin-bottom: 12px;
+
+      box-shadow: 0 1px 4px rgba(0,0,0,.09);
+
+    }
+
+
+
+    .categoria-header {
+
+      padding: 15px 16px;
+
+      display: flex;
+
+      align-items: center;
+
+      justify-content: space-between;
+
+      gap: 10px;
+
+      cursor: pointer;
+
+      background: #fafafa;
+
+    }
+
+
+
+    .categoria-nombre {
+
+      font-size: 16px;
+
+      font-weight: 800;
+
+    }
+
+
+
+    .categoria-contador {
+
+      color: var(--texto-secundario);
+
+      font-size: 12px;
+
+      margin-top: 4px;
+
+    }
+
+
+
+    .flecha {
+
+      font-size: 16px;
+
+      transition: transform .2s;
+
+    }
+
+
+
+    .categoria.cerrada .categoria-contenido {
+
+      display: none;
+
+    }
+
+
+
+    .categoria.cerrada .flecha {
+
+      transform: rotate(-90deg);
+
+    }
+
+
+
+    /* ==========================================================
+
+       FAMILIA
+
+       ========================================================== */
+
+
+
+    .familia {
+
+      border-top: 1px solid #eeeeee;
+
+    }
+
+
+
+    .familia-header {
+
+      padding: 15px 16px;
+
+      display: flex;
+
+      justify-content: space-between;
+
+      gap: 12px;
+
+      cursor: pointer;
+
+    }
+
+
+
+    .familia-nombre {
+
+      font-weight: 800;
+
+      font-size: 15px;
+
+    }
+
+
+
+    .familia-contador {
+
+      font-size: 12px;
+
+      color: var(--texto-secundario);
+
+      margin-top: 4px;
+
+    }
+
+
+
+    .familia-contenido {
+
+      padding: 0 12px 13px 12px;
+
+    }
+
+
+
+    .familia.cerrada .familia-contenido {
+
+      display: none;
+
+    }
+
+
+
+    .familia.cerrada .flecha {
+
+      transform: rotate(-90deg);
+
+    }
+
+
+
+    /* ==========================================================
+
+       VARIANTE
+
+       ========================================================== */
+
+
+
+    .variante {
+
+      border: 1px solid #e4e6e8;
+
+      border-radius: 12px;
+
+      margin-bottom: 10px;
+
+      overflow: hidden;
+
+    }
+
+
+
+    .variante-header {
+
+      background: #f8f9fa;
+
+      padding: 12px;
+
+      cursor: pointer;
+
+      display: flex;
+
+      justify-content: space-between;
+
+      gap: 10px;
+
+    }
+
+
+
+    .variante-etiqueta {
+
+      font-weight: 800;
+
+      font-size: 14px;
+
+      line-height: 1.35;
+
+    }
+
+
+
+    .variante-meta {
+
+      font-size: 12px;
+
+      color: var(--texto-secundario);
+
+      margin-top: 4px;
+
+    }
+
+
+
+    .variante-contenido {
+
+      padding: 11px;
+
+    }
+
+
+
+    .variante.cerrada .variante-contenido {
+
+      display: none;
+
+    }
+
+
+
+    .variante.cerrada .flecha {
+
+      transform: rotate(-90deg);
+
+    }
+
+
+
+    /* ==========================================================
+
+       TAREA DE PREPARACIÓN
+
+       ========================================================== */
+
+
+
+    .tarea {
+
+      border: 1px solid #e1e4e8;
+
+      border-radius: 11px;
+
+      margin-bottom: 9px;
+
+      background: white;
+
+      overflow: hidden;
+
+    }
+
+
+
+    .tarea:last-child {
+
+      margin-bottom: 0;
+
+    }
+
+
+
+    .tarea-principal {
+
+      display: flex;
+
+      gap: 11px;
+
+      align-items: flex-start;
+
+      padding: 13px;
+
+    }
+
+
+
+    .check-real {
+
+      width: 24px;
+
+      height: 24px;
+
+      min-width: 24px;
+
+      accent-color: var(--verde);
+
+      cursor: pointer;
+
+      margin: 1px 0 0 0;
+
+    }
+
+
+
+    .check-real:disabled {
+
+      cursor: wait;
+
+    }
+
+
+
+    .tarea-info {
+
+      flex: 1;
+
+      min-width: 0;
+
+    }
+
+
+
+    .tarea-cantidad {
+
+      font-size: 16px;
+
+      font-weight: 800;
+
+      line-height: 1.35;
+
+    }
+
+
+
+    .tarea.estado-preparado {
+
+      border-color: #a8dab5;
+
+      background: var(--verde-claro);
+
+    }
+
+
+
+    .tarea.estado-preparado .tarea-cantidad {
+
+      color: var(--verde);
+
+    }
+
+
+
+    .guardando {
+
+      opacity: .55;
+
+    }
+
+
+
+    /* ==========================================================
+
+       CLIENTES DE UNA TAREA
+
+       ========================================================== */
+
+
+
+    .clientes-tarea {
+
+      border-top: 1px solid #eeeeee;
+
+      padding: 10px 13px 12px 48px;
+
+      background: rgba(255,255,255,.65);
+
+    }
+
+
+
+    .cliente-tarea {
+
+      padding: 7px 0;
+
+      border-bottom: 1px dashed #e0e0e0;
+
+      font-size: 13px;
+
+    }
+
+
+
+    .cliente-tarea:last-child {
+
+      border-bottom: 0;
+
+    }
+
+
+
+    .cliente-tarea-nombre {
+
+      font-weight: 700;
+
+    }
+
+
+
+    .cliente-tarea-detalle {
+
+      color: var(--texto-secundario);
+
+      margin-top: 3px;
+
+    }
+
+
+
+    /* ==========================================================
+
+       SURTIMIENTO
+
+       ========================================================== */
+
+
+
+    .surtimiento {
+
+      background: var(--amarillo-claro);
+
+      border: 1px solid #f4d57b;
+
+      border-radius: 8px;
+
+      padding: 9px;
+
+      margin-top: 7px;
+
+    }
+
+
+
+    .surtimiento-titulo {
+
+      font-weight: 800;
+
+      font-size: 12px;
+
+      margin-bottom: 5px;
+
+      color: #795500;
+
+    }
+
+
+
+    .surtimiento-item {
+
+      font-size: 12px;
+
+      padding: 2px 0;
+
+    }
+
+
+
+    /* ==========================================================
+
+       PEDIDOS
+
+       ========================================================== */
+
+
+
+    .pedido {
+
+      background: white;
+
+      border-radius: 14px;
+
+      overflow: hidden;
+
+      margin-bottom: 12px;
+
+      box-shadow: 0 1px 4px rgba(0,0,0,.09);
+
+    }
+
+
+
+    .pedido-header {
+
+      padding: 15px 16px;
+
+      cursor: pointer;
+
+      display: flex;
+
+      justify-content: space-between;
+
+      gap: 10px;
+
+    }
+
+
+
+    .pedido-cliente {
+
+      font-weight: 800;
+
+      font-size: 16px;
+
+    }
+
+
+
+    .pedido-meta {
+
+      color: var(--texto-secundario);
+
+      font-size: 12px;
+
+      margin-top: 4px;
+
+    }
+
+
+
+    .pedido-contenido {
+
+      padding: 0 13px 13px 13px;
+
+    }
+
+
+
+    .pedido.cerrado .pedido-contenido {
+
+      display: none;
+
+    }
+
+
+
+    .pedido.cerrado .flecha {
+
+      transform: rotate(-90deg);
+
+    }
+
+
+
+    .producto-pedido {
+
+      border-top: 1px solid #eeeeee;
+
+      padding: 13px 3px;
+
+    }
+
+
+
+    .producto-pedido-principal {
+
+      display: flex;
+
+      align-items: flex-start;
+
+      gap: 10px;
+
+    }
+
+
+
+    .producto-pedido-info {
+
+      flex: 1;
+
+      min-width: 0;
+
+      display: flex;
+
+      align-items: baseline;
+
+      justify-content: space-between;
+
+      gap: 12px;
+
+      flex-wrap: wrap;
+
+    }
+
+
+
+    .producto-pedido-nombre {
+
+      font-weight: 800;
+
+      line-height: 1.35;
+
+      flex: 1 1 420px;
+
+      min-width: 0;
+
+    }
+
+
+
+    .producto-pedido-cantidad {
+
+      margin-top: 0;
+
+      font-size: 14px;
+
+      font-weight: 800;
+
+      white-space: nowrap;
+
+      color: #166534;
+
+      flex: 0 0 auto;
+
+    }
+
+    @media (max-width: 640px) {
+
+      .producto-pedido-info {
+
+        display: block;
+
+      }
+
+      .producto-pedido-cantidad {
+
+        margin-top: 4px;
+
+        white-space: normal;
+
+      }
+
+    }
+
+
+
+    .producto-pedido.verificado {
+
+      background: var(--verde-claro);
+
+      border-radius: 9px;
+
+      padding-left: 8px;
+
+      padding-right: 8px;
+
+    }
+
+
+
+    .observacion {
+
+      background: var(--azul-claro);
+
+      border-radius: 8px;
+
+      padding: 8px;
+
+      margin-top: 8px;
+
+      font-size: 12px;
+
+    }
+
+
+
+    .observacion-general {
+
+      background: var(--amarillo-claro);
+
+      border: 1px solid #f4d57b;
+
+      border-radius: 9px;
+
+      padding: 10px;
+
+      margin: 0 0 10px 0;
+
+      font-size: 13px;
+
+    }
+
+
+
+    /* ==========================================================
+
+       VACÍO
+
+       ========================================================== */
+
+
+
+    .vacio {
+
+      background: white;
+
+      border-radius: 14px;
+
+      padding: 35px 20px;
+
+      text-align: center;
+
+      color: var(--texto-secundario);
+
+      box-shadow: 0 1px 4px rgba(0,0,0,.08);
+
+    }
+
+
+
+    /* ==========================================================
+
+       TOAST
+
+       ========================================================== */
+
+
+
+    .toast {
+
+      position: fixed;
+
+      left: 50%;
+
+      bottom: 20px;
+
+      transform: translateX(-50%);
+
+      background: #202124;
+
+      color: white;
+
+      border-radius: 9px;
+
+      padding: 11px 16px;
+
+      font-size: 13px;
+
+      z-index: 9999;
+
+      display: none;
+
+      max-width: calc(100% - 30px);
+
+      text-align: center;
+
+      box-shadow: 0 4px 15px rgba(0,0,0,.25);
+
+    }
+
+
+
+    .toast.error-toast {
+
+      background: var(--rojo);
+
+    }
+
+
+
+    /* ==========================================================
+
+       MÓVIL
+
+       ========================================================== */
+
+
+
+    @media (max-width: 650px) {
+
+      .contenedor {
+
+        padding: 10px;
+
+        padding-bottom: 70px;
+
+      }
+
+
+
+      .header-contenido {
+
+        padding: 12px 13px;
+
+      }
+
+
+
+      .titulo {
+
+        font-size: 18px;
+
+      }
+
+
+
+      .tabs {
+
+        top: 58px;
+
+      }
+
+
+
+      .botones-dia {
+
+        grid-template-columns: 1fr 1fr 1fr;
+
+      }
+
+
+
+      .boton-dia {
+
+        font-size: 12px;
+
+        padding: 11px 4px;
+
+      }
+
+
+
+      .clientes-tarea {
+
+        padding-left: 48px;
+
+      }
+
+    }
+
+  
+
+    /* ==========================================================
+       DISAN · JERARQUÍA VISUAL ALMACÉN
+       ========================================================== */
+    .categoria-header {
+      background: var(--azul);
+      color: #fff;
+    }
+    .categoria-header .categoria-contador { color: rgba(255,255,255,.86); }
+    .familia-header {
+      background: var(--amarillo-claro);
+      border-left: 4px solid var(--amarillo);
+    }
+    .variante { border-color: #b7dfc1; }
+    .variante-header {
+      background: var(--verde-claro);
+      border-left: 4px solid var(--verde);
+    }
+    .tarea-principal { padding: 14px; }
+    .tarea-cantidad::before {
+      content: "TOTAL A PREPARAR: ";
+      display: block;
+      margin-bottom: 3px;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: .35px;
+      color: var(--texto-secundario);
+    }
+    .tarea.estado-preparado .tarea-cantidad::before { color: var(--verde); }
+    @media (max-width: 650px) {
+      .categoria-header, .familia-header { padding: 13px 12px; }
+      .familia-contenido { padding: 0 8px 10px; }
+      .variante-header { padding: 11px 10px; }
+      .variante-contenido { padding: 8px; }
+      .tarea-cantidad { font-size: 17px; }
+    }
+
+  
+    /* ==========================================================
+       DISAN · AJUSTES RESPONSIVE MÓVIL
+       ========================================================== */
+    html, body {
+      max-width: 100%;
+      overflow-x: hidden;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+
+    .boton-dia {
+      min-width: 0;
+      line-height: 1.15;
+    }
+
+    .boton-dia .dia-nombre {
+      display: block;
+      font-weight: 800;
+    }
+
+    .boton-dia .dia-fecha {
+      display: block;
+      margin-top: 5px;
+      font-size: 11px;
+      font-weight: 600;
+      opacity: .78;
+      white-space: nowrap;
+    }
+
+    .boton-dia.activo .dia-fecha {
+      opacity: .95;
+    }
+
+    img, svg {
+      max-width: 100%;
+    }
+
+    .categoria,
+    .familia,
+    .variante,
+    .tarea,
+    .pedido,
+    .producto-pedido {
+      max-width: 100%;
+      min-width: 0;
+    }
+
+    .categoria-header > *,
+    .familia-header > *,
+    .variante-header > *,
+    .tarea-principal > *,
+    .pedido-header > *,
+    .producto-pedido > * {
+      min-width: 0;
+    }
+
+    .producto-pedido-nombre,
+    .tarea-cantidad,
+    .tarea-etiqueta,
+    .cliente-tarea,
+    .pedido-cliente {
+      overflow-wrap: anywhere;
+      word-break: normal;
+    }
+
+    @media (max-width: 650px) {
+      body {
+        font-size: 14px;
+      }
+
+      .header-contenido,
+      .contenedor {
+        width: 100%;
+        max-width: 100%;
+      }
+
+      .header-contenido {
+        padding: 11px 12px;
+      }
+
+      .titulo {
+        font-size: 17px;
+        line-height: 1.2;
+      }
+
+      .subtitulo {
+        font-size: 12px;
+        margin-top: 3px;
+      }
+
+      .contenedor {
+        padding: 8px;
+        padding-bottom: 72px;
+      }
+
+      .selector-dia {
+        padding: 12px 10px;
+        border-radius: 12px;
+      }
+
+      .selector-titulo {
+        font-size: 16px;
+        margin-bottom: 10px;
+      }
+
+      .botones-dia {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 6px;
+      }
+
+      .boton-dia {
+        min-height: 58px;
+        padding: 9px 3px;
+        font-size: 11px;
+        border-radius: 9px;
+      }
+
+      .boton-dia .dia-fecha {
+        font-size: 10px;
+        margin-top: 4px;
+      }
+
+      .resumen {
+        padding: 13px 11px;
+        border-radius: 12px;
+      }
+
+      .progreso-titulo {
+        font-size: 18px;
+      }
+
+      .chips {
+        gap: 5px;
+      }
+
+      .chip {
+        font-size: 11px;
+      }
+
+      .tabs {
+        gap: 6px;
+      }
+
+      .tab {
+        min-width: 0;
+        padding-left: 6px;
+        padding-right: 6px;
+        font-size: 13px;
+      }
+
+      .categoria-header,
+      .familia-header,
+      .variante-header {
+        gap: 8px;
+      }
+
+      .categoria-nombre,
+      .familia-nombre,
+      .variante-nombre {
+        line-height: 1.25;
+      }
+
+      .tarea-principal {
+        grid-template-columns: auto minmax(0, 1fr);
+        gap: 9px;
+      }
+
+      .tarea-cantidad {
+        font-size: 16px;
+      }
+
+      .clientes-tarea {
+        padding-left: 12px;
+      }
+
+      .pedido {
+        border-radius: 12px;
+      }
+
+      .pedido-header {
+        padding: 12px 10px;
+      }
+
+      .pedido-productos {
+        padding: 8px;
+      }
+
+      .producto-pedido {
+        padding: 10px 8px;
+      }
+
+      .producto-pedido-cantidad {
+        font-size: 14px;
+      }
+
+      .error {
+        font-size: 13px;
+        padding: 12px;
+      }
+    }
+
+    @media (max-width: 390px) {
+      .titulo {
+        font-size: 16px;
+      }
+
+      .boton-dia {
+        font-size: 10px;
+        padding-left: 2px;
+        padding-right: 2px;
+      }
+
+      .boton-dia .dia-fecha {
+        font-size: 9px;
+      }
+
+      .tab {
+        font-size: 12px;
+      }
+    }
+
+  </style>
+
+</head>
+
+
+
+<body>
+
+
+
+  <header class="header">
+
+    <div class="header-contenido">
+
+
+
+      <div class="titulo">
+
+        📦 DISAN · Checklist de Almacén
+
+      </div>
+
+
+
+      <div class="subtitulo">
+
+        Preparación y verificación de pedidos
+
+      </div>
+
+
+
+    </div>
+
+  </header>
+
+
+
+
+
+  <main class="contenedor">
+
+
+
+    <!-- ======================================================
+
+         SELECTOR DÍA
+
+         ====================================================== -->
+
+
+
+    <section class="selector-dia">
+
+
+
+      <div class="selector-titulo">
+
+        Fecha de preparación
+
+      </div>
+
+
+
+      <div class="botones-dia">
+
+        <button
+          class="boton-dia"
+          onclick="seleccionarDia(0, this)"
+        >
+          <span class="dia-nombre">HOY</span>
+          <span class="dia-fecha" id="fechaBoton0">--/--</span>
+        </button>
+
+        <button
+          class="boton-dia"
+          onclick="seleccionarDia(1, this)"
+        >
+          <span class="dia-nombre">MAÑANA</span>
+          <span class="dia-fecha" id="fechaBoton1">--/--</span>
+        </button>
+
+        <button
+          class="boton-dia"
+          onclick="seleccionarDia(2, this)"
+        >
+          <span class="dia-nombre">PASADO MAÑANA</span>
+          <span class="dia-fecha" id="fechaBoton2">--/--</span>
+        </button>
+
+      </div>
+
+    </section>
+
+
+
+
+
+    <div
+
+      id="error"
+
+      class="error"
+
+    ></div>
+
+
+
+
+
+    <div
+
+      id="cargando"
+
+      class="cargando"
+
+    >
+
+      <div class="spinner"></div>
+
+      Cargando checklist...
+
+    </div>
+
+
+
+
+
+    <!-- ======================================================
+
+         CONTENIDO
+
+         ====================================================== -->
+
+
+
+    <div id="contenido">
+
+
+
+      <section class="resumen">
+
+
+
+        <div
+
+          id="fechaSeleccionada"
+
+          class="fecha-seleccionada"
+
+        ></div>
+
+
+
+        <div
+
+          id="progresoTitulo"
+
+          class="progreso-titulo"
+
+        >
+
+          0 / 0 preparados
+
+        </div>
+
+
+
+        <div class="barra">
+
+          <div
+
+            id="barraProgreso"
+
+            class="barra-interna"
+
+          ></div>
+
+        </div>
+
+
+
+        <div
+
+          id="chips"
+
+          class="chips"
+
+        ></div>
+
+
+
+      </section>
+
+
+
+
+
+      <div class="tabs">
+
+
+
+        <button
+
+          id="tabPreparacion"
+
+          class="tab activo"
+
+          onclick="mostrarTab('preparacion')"
+
+        >
+
+          📦 PREPARACIÓN
+
+        </button>
+
+
+
+        <button
+
+          id="tabPedidos"
+
+          class="tab"
+
+          onclick="mostrarTab('pedidos')"
+
+        >
+
+          🧾 PEDIDOS
+
+        </button>
+
+
+
+      </div>
+
+
+
+
+
+      <section id="vistaPreparacion">
+
+        <div id="categorias"></div>
+
+      </section>
+
+
+
+
+
+      <section
+
+        id="vistaPedidos"
+
+        style="display:none"
+
+      ></section>
+
+
+
+    </div>
+
+
+
+  </main>
+
+
+
+
+
+  <div
+
+    id="toast"
+
+    class="toast"
+
+  ></div>
+
+
+
+
+
+  <script>
+
+
+
+    /************************************************************
+
+     * ESTADO LOCAL
+
+     ************************************************************/
+
+
+
+    let datosActuales = null;
+
+
+
+    let diaActual = null;
+
+
+
+    let tabActual = 'preparacion';
+
+
+
+    let toastTimer = null;
+
+
+
+    const API_CHECKLIST_URL =
+      'https://disan-checklist-api.visionagenciademarketing.workers.dev/checklist';
+
+    const API_BASE_URL =
+      'https://disan-checklist-api.visionagenciademarketing.workers.dev';
+
+    const CLAVE_SESION_UI = 'disanChecklistUiV1';
+
+
+
+
+
+    /************************************************************
+
+     * SELECCIONAR DÍA
+
+     ************************************************************/
+
+
+
+    function seleccionarDia(
+
+      dia,
+
+      boton
+
+    ) {
+
+
+
+      diaActual = Number(dia);
+      guardarEstadoSesionUi();
+
+
+
+
+
+      document
+
+        .querySelectorAll('.boton-dia')
+
+        .forEach(
+
+          function(b) {
+
+            b.classList.remove('activo');
+
+          }
+
+        );
+
+
+
+
+
+      boton.classList.add('activo');
+
+
+
+
+
+      ocultarError();
+
+
+
+
+
+      document
+
+        .getElementById('contenido')
+
+        .style.display = 'none';
+
+
+
+
+
+      document
+
+        .getElementById('cargando')
+
+        .style.display = 'block';
+
+
+
+
+
+      cargarChecklistJsonp(diaActual)
+        .then(function(respuestaApi) {
+
+          document
+            .getElementById('cargando')
+            .style.display = 'none';
+
+          if (!respuestaApi || respuestaApi.ok !== true) {
+
+            throw new Error(
+              respuestaApi && respuestaApi.error
+                ? respuestaApi.error
+                : 'La API no devolvió datos válidos.'
+            );
+
+          }
+
+          datosActuales = respuestaApi.datos;
+
+          normalizarDatosLocales();
+
+          renderizarTodo();
+
+        })
+        .catch(function(error) {
+
+          document
+            .getElementById('cargando')
+            .style.display = 'none';
+
+          mostrarError(
+            obtenerMensajeError(error)
+          );
+
+        });
+
+    }
+
+
+
+
+
+    /************************************************************
+     * CARGAR CHECKLIST DESDE GITHUB MEDIANTE CLOUDFLARE
+     ************************************************************/
+
+    async function cargarChecklistJsonp(dia) {
+
+      const url =
+        API_CHECKLIST_URL +
+        '?dia=' +
+        encodeURIComponent(dia) +
+        '&_=' +
+        Date.now();
+
+      let respuesta;
+
+      try {
+        respuesta = await fetch(url, {
+          method: 'GET',
+          mode: 'cors',
+          cache: 'no-store',
+          headers: { 'Accept': 'application/json' }
+        });
+      } catch (error) {
+        throw new Error('No se pudo conectar con la API de DISAN.');
+      }
+
+      if (!respuesta.ok) {
+        throw new Error('La API de DISAN respondió con error HTTP ' + respuesta.status + '.');
+      }
+
+      try {
+        return await respuesta.json();
+      } catch (error) {
+        throw new Error('La API de DISAN devolvió una respuesta inválida.');
+      }
+    }
+
+
+    /************************************************************
+
+     * NORMALIZAR RESPUESTA
+
+     ************************************************************/
+
+
+
+    function normalizarDatosLocales() {
+
+
+
+      if (!datosActuales) {
+
+        return;
+
+      }
+
+
+
+
+
+      if (!datosActuales.estados) {
+
+
+
+        datosActuales.estados = {};
+
+
+
+      }
+
+
+
+
+
+      if (!datosActuales.estados.preparacion) {
+
+
+
+        datosActuales.estados.preparacion = {};
+
+
+
+      }
+
+
+
+
+
+      if (!datosActuales.estados.verificacion) {
+
+
+
+        datosActuales.estados.verificacion = {};
+
+
+
+      }
+
+
+
+
+
+      if (!Array.isArray(datosActuales.categorias)) {
+
+
+
+        datosActuales.categorias = [];
+
+
+
+      }
+
+
+
+
+
+      if (!Array.isArray(datosActuales.pedidos)) {
+
+
+
+        datosActuales.pedidos = [];
+
+
+
+      }
+
+
+
+    }
+
+
+
+
+
+    /************************************************************
+
+     * RENDER GENERAL
+
+     ************************************************************/
+
+
+
+    function renderizarTodo() {
+
+
+
+      if (!datosActuales) {
+
+        return;
+
+      }
+
+
+
+
+
+      renderizarResumen();
+
+
+
+      renderizarCategorias();
+
+
+
+      renderizarPedidos();
+
+
+
+
+
+      document
+
+        .getElementById('contenido')
+
+        .style.display = 'block';
+
+
+
+
+
+      mostrarTab(tabActual);
+      restaurarDesplegablesSesion();
+      restaurarScrollSesion();
+
+
+
+    }
+
+
+
+
+
+    /************************************************************
+
+     * RESUMEN
+
+     ************************************************************/
+
+
+
+    function renderizarResumen() {
+
+
+
+      const resumen =
+
+        datosActuales.resumen || {};
+
+
+
+
+
+      const preparados =
+
+        contarPreparados();
+
+
+
+
+
+      const total =
+
+        Number(
+
+          resumen.tareasPreparacion || 0
+
+        );
+
+
+
+
+
+      const porcentaje =
+
+        total > 0
+
+          ? Math.round(
+
+              preparados / total * 100
+
+            )
+
+          : 0;
+
+
+
+
+
+      document
+
+        .getElementById('fechaSeleccionada')
+
+        .textContent =
+
+          (datosActuales.etiqueta || '') +
+
+          ' · ' +
+
+          (datosActuales.fecha || '');
+
+
+
+
+
+      document
+
+        .getElementById('progresoTitulo')
+
+        .textContent =
+
+          preparados +
+
+          ' / ' +
+
+          total +
+
+          ' preparados — ' +
+
+          porcentaje +
+
+          '%';
+
+
+
+
+
+      document
+
+        .getElementById('barraProgreso')
+
+        .style.width =
+
+          porcentaje + '%';
+
+
+
+
+
+      document
+
+        .getElementById('chips')
+
+        .innerHTML =
+
+
+
+          crearChip(
+
+            resumen.pedidos || 0,
+
+            'pedidos'
+
+          ) +
+
+
+
+          crearChip(
+
+            resumen.categorias || 0,
+
+            'categorías'
+
+          ) +
+
+
+
+          crearChip(
+
+            resumen.familias || 0,
+
+            'familias'
+
+          ) +
+
+
+
+          crearChip(
+
+            resumen.variantes || 0,
+
+            'variantes'
+
+          ) +
+
+
+
+          crearChip(
+
+            resumen.tareasPreparacion || 0,
+
+            'tareas'
+
+          );
+
+
+
+    }
+
+
+
+
+
+    function crearChip(
+
+      numero,
+
+      texto
+
+    ) {
+
+
+
+      return (
+
+        '<span class="chip">' +
+
+          escaparHtml(numero) +
+
+          ' ' +
+
+          escaparHtml(texto) +
+
+        '</span>'
+
+      );
+
+
+
+    }
+
+
+
+
+
+    /************************************************************
+
+     * CONTAR PREPARADOS
+
+     ************************************************************/
+
+
+
+    function contarPreparados() {
+
+
+
+      if (
+
+        !datosActuales ||
+
+        !datosActuales.estados ||
+
+        !datosActuales.estados.preparacion
+
+      ) {
+
+
+
+        return 0;
+
+
+
+      }
+
+
+
+
+
+      let total = 0;
+
+
+
+
+
+      Object
+
+        .values(
+
+          datosActuales.estados.preparacion
+
+        )
+
+        .forEach(
+
+          function(estado) {
+
+
+
+            if (
+
+              estado &&
+
+              estado.preparado === true
+
+            ) {
+
+
+
+              total++;
+
+
+
+            }
+
+
+
+          }
+
+        );
+
+
+
+
+
+      return total;
+
+
+
+    }
+
+
+
+
+
+    /************************************************************
+
+     * CATEGORÍAS
+
+     ************************************************************/
+
+
+
+    function renderizarCategorias() {
+
+
+
+      const contenedor =
+
+        document.getElementById(
+
+          'categorias'
+
+        );
+
+
+
+
+
+      if (
+
+        !datosActuales.categorias ||
+
+        datosActuales.categorias.length === 0
+
+      ) {
+
+
+
+        contenedor.innerHTML =
+
+          '<div class="vacio">' +
+
+            'No hay productos pendientes para esta fecha.' +
+
+          '</div>';
+
+
+
+        return;
+
+
+
+      }
+
+
+
+
+
+      let html = '';
+
+
+
+
+
+      datosActuales.categorias.forEach(
+
+        function(categoria) {
+
+
+
+          html +=
+
+            construirCategoriaHtml(
+
+              categoria
+
+            );
+
+
+
+        }
+
+      );
+
+
+
+
+
+      contenedor.innerHTML = html;
+
+
+
+    }
+
+
+
+
+
+    function construirCategoriaHtml(
+
+      categoria
+
+    ) {
+
+
+
+      const familias =
+
+        obtenerFamiliasCategoria(
+
+          categoria
+
+        );
+
+
+
+
+
+      const totalTareas =
+
+        contarTareasCategoria(
+
+          categoria
+
+        );
+
+
+
+
+
+      const preparados =
+
+        contarPreparadosCategoria(
+
+          categoria
+
+        );
+
+
+
+
+
+      let html =
+
+
+
+        '<section class="categoria cerrada">' +
+
+
+
+          '<div ' +
+
+            'class="categoria-header" ' +
+
+            'onclick="toggleCategoria(this)"' +
+
+          '>' +
+
+
+
+            '<div>' +
+
+
+
+              '<div class="categoria-nombre">' +
+
+                '📂 ' +
+
+                escaparHtml(
+
+                  categoria.nombreCategoria ||
+
+                  'SIN CATEGORÍA'
+
+                ) +
+
+              '</div>' +
+
+
+
+              '<div class="categoria-contador">' +
+
+                preparados +
+
+                ' / ' +
+
+                totalTareas +
+
+                ' preparados · ' +
+
+                familias.length +
+
+                ' productos' +
+
+              '</div>' +
+
+
+
+            '</div>' +
+
+
+
+            '<div class="flecha">▼</div>' +
+
+
+
+          '</div>' +
+
+
+
+          '<div class="categoria-contenido">';
+
+
+
+
+
+      familias.forEach(
+
+        function(familia) {
+
+
+
+          html +=
+
+            construirFamiliaHtml(
+
+              familia
+
+            );
+
+
+
+        }
+
+      );
+
+
+
+
+
+      html +=
+
+
+
+          '</div>' +
+
+
+
+        '</section>';
+
+
+
+
+
+      return html;
+
+
+
+    }
+
+
+
+
+
+    /************************************************************
+
+     * FAMILIA
+
+     ************************************************************/
+
+
+
+    function construirFamiliaHtml(
+
+      familia
+
+    ) {
+
+
+
+      const variantes =
+
+        Array.isArray(familia.variantes)
+
+          ? familia.variantes
+
+          : [];
+
+
+
+
+
+      let totalTareas = 0;
+
+
+
+      let preparados = 0;
+
+
+
+
+
+      variantes.forEach(
+
+        function(variante) {
+
+
+
+          const grupos =
+
+            obtenerGruposPreparacion(
+
+              variante
+
+            );
+
+
+
+
+
+          totalTareas +=
+
+            grupos.length;
+
+
+
+
+
+          grupos.forEach(
+
+            function(grupo) {
+
+
+
+              if (
+
+                estaPreparado(
+
+                  grupo.idChecklist
+
+                )
+
+              ) {
+
+
+
+                preparados++;
+
+
+
+              }
+
+
+
+            }
+
+          );
+
+
+
+        }
+
+      );
+
+
+
+
+
+      let html =
+
+
+
+        '<div class="familia cerrada">' +
+
+
+
+          '<div ' +
+
+            'class="familia-header" ' +
+
+            'onclick="toggleFamilia(this)"' +
+
+          '>' +
+
+
+
+            '<div>' +
+
+
+
+              '<div class="familia-nombre">' +
+
+                escaparHtml(
+
+                  familia.producto ||
+
+                  familia.nombreProducto ||
+
+                  familia.nombre ||
+
+                  'PRODUCTO'
+
+                ) +
+
+              '</div>' +
+
+
+
+              '<div class="familia-contador">' +
+
+                preparados +
+
+                ' / ' +
+
+                totalTareas +
+
+                ' preparados · ' +
+
+                variantes.length +
+
+                ' variantes' +
+
+              '</div>' +
+
+
+
+            '</div>' +
+
+
+
+            '<div class="flecha">▼</div>' +
+
+
+
+          '</div>' +
+
+
+
+          '<div class="familia-contenido">';
+
+
+
+
+
+      variantes.forEach(
+
+        function(variante) {
+
+
+
+          html +=
+
+            construirVarianteHtml(
+
+              variante
+
+            );
+
+
+
+        }
+
+      );
+
+
+
+
+
+      html +=
+
+
+
+          '</div>' +
+
+
+
+        '</div>';
+
+
+
+
+
+      return html;
+
+
+
+    }
+
+
+
+
+
+    /************************************************************
+
+     * VARIANTE
+
+     ************************************************************/
+
+
+
+    function construirVarianteHtml(
+
+      variante
+
+    ) {
+
+
+
+      const grupos =
+
+        obtenerGruposPreparacion(
+
+          variante
+
+        );
+
+
+
+
+
+      const etiqueta =
+
+        obtenerEtiquetaVariante(
+
+          variante
+
+        );
+
+
+
+
+
+      let html =
+
+
+
+        '<div class="variante">' +
+
+
+
+          '<div ' +
+
+            'class="variante-header" ' +
+
+            'onclick="toggleVariante(this)"' +
+
+          '>' +
+
+
+
+            '<div>' +
+
+
+
+              '<div class="variante-etiqueta">' +
+
+                escaparHtml(etiqueta) +
+
+              '</div>' +
+
+
+
+              '<div class="variante-meta">' +
+
+                grupos.length +
+
+                (
+
+                  grupos.length === 1
+
+                    ? ' tarea de preparación'
+
+                    : ' tareas de preparación'
+
+                ) +
+
+              '</div>' +
+
+
+
+            '</div>' +
+
+
+
+            '<div class="flecha">▼</div>' +
+
+
+
+          '</div>' +
+
+
+
+          '<div class="variante-contenido">';
+
+
+
+
+
+      grupos.forEach(
+
+        function(grupo) {
+
+
+
+          html +=
+
+            construirTareaHtml(
+
+              grupo
+
+            );
+
+
+
+        }
+
+      );
+
+
+
+
+
+      html +=
+
+
+
+          '</div>' +
+
+
+
+        '</div>';
+
+
+
+
+
+      return html;
+
+
+
+    }
+
+
+
+
+
+    /************************************************************
+
+     * TAREA
+
+     ************************************************************/
+
+
+
+    function construirTareaHtml(
+
+      grupo
+
+    ) {
+
+
+
+      const idChecklist =
+
+        String(
+
+          grupo.idChecklist || ''
+
+        );
+
+
+
+
+
+      const preparado =
+
+        estaPreparado(
+
+          idChecklist
+
+        );
+
+
+
+
+
+      const clasePreparado =
+
+        preparado
+
+          ? ' estado-preparado'
+
+          : '';
+
+
+
+
+
+      const texto =
+
+        obtenerTextoPreparacion(
+
+          grupo
+
+        );
+
+
+
+
+
+      const pedidos =
+
+        Array.isArray(grupo.pedidos)
+
+          ? grupo.pedidos
+
+          : [];
+
+
+
+
+
+      let html =
+
+
+
+        '<div ' +
+
+          'class="tarea' +
+
+          clasePreparado +
+
+          '" ' +
+
+          'data-checklist="' +
+
+          escaparAtributo(idChecklist) +
+
+          '"' +
+
+        '>' +
+
+
+
+          '<div class="tarea-principal">' +
+
+
+
+            '<input ' +
+
+              'type="checkbox" ' +
+
+              'class="check-real check-preparacion" ' +
+
+              (
+
+                preparado
+
+                  ? 'checked '
+
+                  : ''
+
+              ) +
+
+              'onclick="event.stopPropagation()" ' +
+
+              'onchange="cambiarPreparacion(this)" ' +
+
+              'data-checklist="' +
+
+              escaparAtributo(idChecklist) +
+
+              '"' +
+
+            '>' +
+
+
+
+            '<div class="tarea-info">' +
+
+
+
+              '<div class="tarea-cantidad">' +
+
+                escaparHtml(texto) +
+
+              '</div>' +
+
+
+
+            '</div>' +
+
+
+
+          '</div>';
+
+
+
+
+
+      if (pedidos.length > 0) {
+
+
+
+        html +=
+
+          '<div class="clientes-tarea">';
+
+
+
+
+
+        pedidos.forEach(
+
+          function(pedido) {
+
+
+
+            html +=
+
+              construirClienteTareaHtml(
+
+                pedido
+
+              );
+
+
+
+          }
+
+        );
+
+
+
+
+
+        html +=
+
+          '</div>';
+
+
+
+      }
+
+
+
+
+
+      html +=
+
+        '</div>';
+
+
+
+
+
+      return html;
+
+
+
+    }
+
+
+
+
+
+    /************************************************************
+
+     * CLIENTE DENTRO DE TAREA
+
+     ************************************************************/
+
+
+
+    function construirClienteTareaHtml(
+
+      pedido
+
+    ) {
+
+
+
+      const cliente =
+
+        obtenerTextoCliente(
+
+          pedido.cliente
+
+        );
+
+
+
+
+
+      let html =
+
+
+
+        '<div class="cliente-tarea">' +
+
+
+
+          '<div class="cliente-tarea-nombre">' +
+
+            escaparHtml(cliente) +
+
+          '</div>';
+
+
+
+
+
+      const textoCantidad =
+
+        obtenerTextoPedidoPreparacion(
+
+          pedido
+
+        );
+
+
+
+
+
+      if (textoCantidad) {
+
+
+
+        html +=
+
+
+
+          '<div class="cliente-tarea-detalle">' +
+
+            escaparHtml(textoCantidad) +
+
+          '</div>';
+
+
+
+      }
+
+
+
+
+
+      const surtimientos =
+
+        obtenerSurtimientos(
+
+          pedido
+
+        );
+
+
+
+
+
+      if (surtimientos.length > 0) {
+
+
+
+        html +=
+
+          construirSurtimientoHtml(
+
+            surtimientos
+
+          );
+
+
+
+      }
+
+
+
+
+
+      const observacion =
+
+        obtenerObservacion(
+
+          pedido
+
+        );
+
+
+
+
+
+      if (observacion) {
+
+
+
+        html +=
+
+
+
+          '<div class="observacion">' +
+
+            '<strong>Observación:</strong> ' +
+
+            escaparHtml(observacion) +
+
+          '</div>';
+
+
+
+      }
+
+
+
+
+
+      html +=
+
+        '</div>';
+
+
+
+
+
+      return html;
+
+
+
+    }
+
+
+
+
+
+    /************************************************************
+
+     * GUARDAR PREPARACIÓN
+
+     ************************************************************/
+
+
+
+    async function cambiarPreparacion(
+      checkbox
+    ) {
+
+      const idChecklist =
+        String(checkbox.dataset.checklist || '').trim();
+
+      const preparado =
+        checkbox.checked === true;
+
+      const fechaEntrega =
+        String(
+          datosActuales && datosActuales.fecha
+            ? datosActuales.fecha
+            : ''
+        ).trim();
+
+      if (!idChecklist || !fechaEntrega) {
+        checkbox.checked = !preparado;
+        mostrarToast(
+          'No se pudo identificar la tarea o la fecha.',
+          true
+        );
+        return;
+      }
+
+      const tarea =
+        checkbox.closest('.tarea');
+
+      checkbox.disabled = true;
+
+      if (tarea) {
+        tarea.classList.add('guardando');
+      }
+
+      try {
+
+        const url =
+          'https://disan-checklist-api.visionagenciademarketing.workers.dev/preparacion' +
+          '?idChecklist=' + encodeURIComponent(idChecklist) +
+          '&fechaEntrega=' + encodeURIComponent(fechaEntrega) +
+          '&preparado=' + encodeURIComponent(preparado ? 'true' : 'false') +
+          '&_=' + Date.now();
+
+        const respuesta =
+          await fetch(url, {
+            method: 'GET',
+            mode: 'cors',
+            cache: 'no-store',
+            headers: {
+              'Accept': 'application/json'
+            }
+          });
+
+        if (!respuesta.ok) {
+          throw new Error(
+            'Error HTTP ' + respuesta.status
+          );
+        }
+
+        const resultado =
+          await respuesta.json();
+
+        if (!resultado || resultado.ok !== true) {
+          throw new Error(
+            resultado && resultado.error
+              ? resultado.error
+              : 'No se pudo guardar PREPARADO.'
+          );
+        }
+
+        if (!datosActuales.estados) {
+          datosActuales.estados = {};
+        }
+
+        if (!datosActuales.estados.preparacion) {
+          datosActuales.estados.preparacion = {};
+        }
+
+        const estadoAnterior =
+          datosActuales.estados.preparacion[idChecklist] || {};
+
+        datosActuales.estados.preparacion[idChecklist] = {
+          ...estadoAnterior,
+          preparado: preparado
+        };
+
+        if (tarea) {
+          tarea.classList.toggle(
+            'estado-preparado',
+            preparado
+          );
+        }
+
+        actualizarContadoresPreparacion(
+          tarea
+        );
+
+        mostrarToast(
+          preparado
+            ? '✓ Producto marcado como PREPARADO.'
+            : 'Producto desmarcado.',
+          false
+        );
+
+      }
+      catch (error) {
+
+        checkbox.checked = !preparado;
+
+        mostrarToast(
+          error && error.message
+            ? error.message
+            : 'No se pudo guardar PREPARADO.',
+          true
+        );
+
+      }
+      finally {
+
+        checkbox.disabled = false;
+
+        if (tarea) {
+          tarea.classList.remove('guardando');
+        }
+
+      }
+
+    }
+
+
+
+    /************************************************************
+
+     * ACTUALIZAR CONTADORES
+
+     *
+
+     * Re-renderizamos preparación.
+
+     * Los checks se conservan en datosActuales.estados.
+
+     ************************************************************/
+
+
+
+    function actualizarContadoresPreparacion(
+      tareaActual
+    ) {
+
+      // Resumen general: usa directamente los checks visibles.
+      const todosChecks =
+        Array.from(
+          document.querySelectorAll(
+            '.check-preparacion'
+          )
+        );
+
+      const totalGeneral =
+        todosChecks.length;
+
+      const preparadosGeneral =
+        todosChecks.filter(
+          function(check) {
+            return check.checked;
+          }
+        ).length;
+
+      const porcentaje =
+        totalGeneral > 0
+          ? Math.round(
+              preparadosGeneral /
+              totalGeneral * 100
+            )
+          : 0;
+
+      document
+        .getElementById('progresoTitulo')
+        .textContent =
+          preparadosGeneral +
+          ' / ' +
+          totalGeneral +
+          ' preparados — ' +
+          porcentaje +
+          '%';
+
+      document
+        .getElementById('barraProgreso')
+        .style.width =
+          porcentaje + '%';
+
+
+      // Actualiza el contador del PRODUCTO sin reconstruirlo.
+      const familia =
+        tareaActual
+          ? tareaActual.closest('.familia')
+          : null;
+
+      if (familia) {
+
+        const checksFamilia =
+          Array.from(
+            familia.querySelectorAll(
+              '.check-preparacion'
+            )
+          );
+
+        const preparadosFamilia =
+          checksFamilia.filter(
+            function(check) {
+              return check.checked;
+            }
+          ).length;
+
+        const contadorFamilia =
+          familia.querySelector(
+            '.familia-contador'
+          );
+
+        if (contadorFamilia) {
+
+          const variantes =
+            familia.querySelectorAll(
+              '.variante'
+            ).length;
+
+          contadorFamilia.textContent =
+            preparadosFamilia +
+            ' / ' +
+            checksFamilia.length +
+            ' preparados · ' +
+            variantes +
+            ' variantes';
+
+        }
+
+      }
+
+
+      // Actualiza el contador de la CATEGORÍA sin reconstruirla.
+      const categoria =
+        tareaActual
+          ? tareaActual.closest('.categoria')
+          : null;
+
+      if (categoria) {
+
+        const checksCategoria =
+          Array.from(
+            categoria.querySelectorAll(
+              '.check-preparacion'
+            )
+          );
+
+        const preparadosCategoria =
+          checksCategoria.filter(
+            function(check) {
+              return check.checked;
+            }
+          ).length;
+
+        const contadorCategoria =
+          categoria.querySelector(
+            '.categoria-contador'
+          );
+
+        if (contadorCategoria) {
+
+          const productos =
+            categoria.querySelectorAll(
+              '.familia'
+            ).length;
+
+          contadorCategoria.textContent =
+            preparadosCategoria +
+            ' / ' +
+            checksCategoria.length +
+            ' preparados · ' +
+            productos +
+            ' productos';
+
+        }
+
+      }
+
+
+      // Si se completó la VARIANTE actual, se cierra sola.
+      const variante =
+        tareaActual
+          ? tareaActual.closest('.variante')
+          : null;
+
+      if (variante) {
+
+        const checksVariante =
+          Array.from(
+            variante.querySelectorAll(
+              '.check-preparacion'
+            )
+          );
+
+        const varianteCompleta =
+          checksVariante.length > 0 &&
+          checksVariante.every(
+            function(check) {
+              return check.checked;
+            }
+          );
+
+        if (varianteCompleta) {
+          variante.classList.add('cerrada');
+        }
+
+      }
+
+
+      // Cuando TODO el PRODUCTO está preparado, se cierra.
+      if (familia) {
+
+        const checksFamilia =
+          Array.from(
+            familia.querySelectorAll(
+              '.check-preparacion'
+            )
+          );
+
+        const familiaCompleta =
+          checksFamilia.length > 0 &&
+          checksFamilia.every(
+            function(check) {
+              return check.checked;
+            }
+          );
+
+        if (familiaCompleta) {
+          familia.classList.add('cerrada');
+        }
+
+      }
+
+
+      // Cuando TODOS los productos de la categoría están listos,
+      // se cierra la categoría completa.
+      if (categoria) {
+
+        const checksCategoria =
+          Array.from(
+            categoria.querySelectorAll(
+              '.check-preparacion'
+            )
+          );
+
+        const categoriaCompleta =
+          checksCategoria.length > 0 &&
+          checksCategoria.every(
+            function(check) {
+              return check.checked;
+            }
+          );
+
+        if (categoriaCompleta) {
+          categoria.classList.add('cerrada');
+        }
+
+      }
+
+    }
+
+
+
+
+
+    /************************************************************
+
+     * PEDIDOS
+
+     ************************************************************/
+
+
+
+    function renderizarPedidos() {
+
+
+
+      const contenedor =
+
+        document.getElementById(
+
+          'vistaPedidos'
+
+        );
+
+
+
+
+
+      const pedidos =
+
+        datosActuales.pedidos || [];
+
+
+
+
+
+      if (pedidos.length === 0) {
+
+
+
+        contenedor.innerHTML =
+
+
+
+          '<div class="vacio">' +
+
+            'No hay pedidos pendientes para esta fecha.' +
+
+          '</div>';
+
+
+
+        return;
+
+
+
+      }
+
+
+
+
+
+      let html = '';
+
+
+
+
+
+      pedidos.forEach(
+
+        function(pedido) {
+
+
+
+          html +=
+
+            construirPedidoHtml(
+
+              pedido
+
+            );
+
+
+
+        }
+
+      );
+
+
+
+
+
+      contenedor.innerHTML = html;
+
+
+
+    }
+
+
+
+
+
+    function construirPedidoHtml(
+
+      pedido
+
+    ) {
+
+
+
+      const productos =
+
+        Array.isArray(pedido.productos)
+
+          ? pedido.productos
+
+          : [];
+
+
+
+
+
+      const cliente =
+
+        obtenerTextoCliente(
+
+          pedido.cliente
+
+        );
+
+
+
+
+
+      let verificados = 0;
+
+
+
+
+
+      productos.forEach(
+
+        function(producto) {
+
+
+
+          if (
+
+            estaProductoVerificado(
+
+              pedido.idPedido,
+
+              obtenerIdDetallePedido(
+
+                producto
+
+              )
+
+            )
+
+          ) {
+
+
+
+            verificados++;
+
+
+
+          }
+
+
+
+        }
+
+      );
+
+
+
+
+
+      let html =
+
+
+
+        '<section class="pedido cerrado">' +
+
+
+
+          '<div ' +
+
+            'class="pedido-header" ' +
+
+            'onclick="togglePedido(this)"' +
+
+          '>' +
+
+
+
+            '<div>' +
+
+
+
+              '<div class="pedido-cliente">' +
+
+                escaparHtml(cliente) +
+
+              '</div>' +
+
+
+
+              '<div class="pedido-meta">' +
+
+
+
+                escaparHtml(
+
+                  pedido.idPedido || ''
+
+                ) +
+
+
+
+                ' · ' +
+
+
+
+                '<span class="verificacion-contador">' +
+                verificados + ' / ' + productos.length + ' verificados</span>' +
+
+
+
+              '</div>' +
+
+
+
+            '</div>' +
+
+
+
+            '<div class="flecha">▼</div>' +
+
+
+
+          '</div>' +
+
+
+
+          '<div class="pedido-contenido">';
+
+
+
+
+
+      const observacionGeneral =
+
+        obtenerObservacionGeneral(
+
+          pedido
+
+        );
+
+
+
+
+
+      if (observacionGeneral) {
+
+
+
+        html +=
+
+
+
+          '<div class="observacion-general">' +
+
+
+
+            '<strong>' +
+
+              '📝 Observación del pedido:' +
+
+            '</strong><br>' +
+
+
+
+            escaparHtml(
+
+              observacionGeneral
+
+            ) +
+
+
+
+          '</div>';
+
+
+
+      }
+
+
+
+
+
+      productos.forEach(
+
+        function(producto) {
+
+
+
+          html +=
+
+            construirProductoPedidoHtml(
+
+              pedido,
+
+              producto
+
+            );
+
+
+
+        }
+
+      );
+
+
+
+
+
+      html +=
+
+
+
+          '</div>' +
+
+
+
+        '</section>';
+
+
+
+
+
+      return html;
+
+
+
+    }
+
+
+
+
+
+    /************************************************************
+
+     * PRODUCTO DENTRO DE PEDIDO
+
+     ************************************************************/
+
+
+
+    function construirProductoPedidoHtml(
+
+      pedido,
+
+      producto
+
+    ) {
+
+
+
+      const idDetalle =
+
+        obtenerIdDetallePedido(
+
+          producto
+
+        );
+
+
+
+
+
+      const verificado =
+
+        estaProductoVerificado(
+
+          pedido.idPedido,
+
+          idDetalle
+
+        );
+
+
+
+
+
+      const clase =
+
+        verificado
+
+          ? ' verificado'
+
+          : '';
+
+
+
+
+
+      const nombre =
+
+        obtenerNombreProductoPedido(
+
+          producto
+
+        );
+
+
+
+
+
+      const cantidad =
+
+        obtenerCantidadProductoPedido(
+
+          producto
+
+        );
+
+
+
+
+
+      let html =
+
+
+
+        '<div ' +
+
+          'class="producto-pedido' +
+
+          clase +
+
+          '" ' +
+
+          'data-pedido="' +
+
+          escaparAtributo(
+
+            pedido.idPedido || ''
+
+          ) +
+
+          '" ' +
+
+          'data-detalle="' +
+
+          escaparAtributo(
+
+            idDetalle
+
+          ) +
+
+          '"' +
+
+        '>' +
+
+
+
+          '<div class="producto-pedido-principal">' +
+
+
+
+            '<input ' +
+
+              'type="checkbox" ' +
+
+              'class="check-real check-verificacion" ' +
+
+              (
+
+                verificado
+
+                  ? 'checked '
+
+                  : ''
+
+              ) +
+
+              'onchange="cambiarVerificacion(this)" ' +
+
+              'data-pedido="' +
+
+              escaparAtributo(
+
+                pedido.idPedido || ''
+
+              ) +
+
+              '" ' +
+
+              'data-detalle="' +
+
+              escaparAtributo(
+
+                idDetalle
+
+              ) +
+
+              '"' +
+
+            '>' +
+
+
+
+            '<div class="producto-pedido-info">' +
+
+
+
+              '<div class="producto-pedido-nombre">' +
+
+                escaparHtml(nombre) +
+
+              '</div>';
+
+
+
+
+
+      if (cantidad) {
+
+
+
+        html +=
+
+
+
+          '<div class="producto-pedido-cantidad">' +
+
+            escaparHtml(cantidad) +
+
+          '</div>';
+
+
+
+      }
+
+
+
+
+
+      const surtimientos =
+
+        obtenerSurtimientos(
+
+          producto
+
+        );
+
+
+
+
+
+      if (surtimientos.length > 0) {
+
+
+
+        html +=
+
+          construirSurtimientoHtml(
+
+            surtimientos
+
+          );
+
+
+
+      }
+
+
+
+
+
+      const observacion =
+
+        obtenerObservacion(
+
+          producto
+
+        );
+
+
+
+
+
+      if (observacion) {
+
+
+
+        html +=
+
+
+
+          '<div class="observacion">' +
+
+            '<strong>Observación:</strong> ' +
+
+            escaparHtml(observacion) +
+
+          '</div>';
+
+
+
+      }
+
+
+
+
+
+      html +=
+
+
+
+            '</div>' +
+
+
+
+          '</div>' +
+
+
+
+        '</div>';
+
+
+
+
+
+      return html;
+
+
+
+    }
+
+
+
+
+
+    /************************************************************
+
+     * GUARDAR VERIFICACIÓN
+
+     ************************************************************/
+
+
+
+    async function cambiarVerificacion(checkbox) {
+      const idPedido = String(checkbox.dataset.pedido || '').trim();
+      const idDetallePedido = String(checkbox.dataset.detalle || '').trim();
+      const verificado = checkbox.checked === true;
+      const fechaEntrega = String(datosActuales && datosActuales.fecha ? datosActuales.fecha : '').trim();
+      const producto = checkbox.closest('.producto-pedido');
+      const pedido = checkbox.closest('.pedido');
+
+      if (!idPedido || !idDetallePedido || !fechaEntrega) {
+        checkbox.checked = !verificado;
+        mostrarToast('No se pudo identificar el pedido, producto o fecha.', true);
+        return;
+      }
+
+      checkbox.disabled = true;
+      if (producto) producto.classList.add('guardando');
+
+      try {
+        const url = API_BASE_URL + '/verificacion' +
+          '?fechaEntrega=' + encodeURIComponent(fechaEntrega) +
+          '&idPedido=' + encodeURIComponent(idPedido) +
+          '&idDetallePedido=' + encodeURIComponent(idDetallePedido) +
+          '&verificado=' + encodeURIComponent(verificado ? 'true' : 'false') +
+          '&_=' + Date.now();
+        const respuesta = await fetch(url, { method:'GET', mode:'cors', cache:'no-store', headers:{'Accept':'application/json'} });
+        if (!respuesta.ok) throw new Error('Error HTTP ' + respuesta.status);
+        const resultado = await respuesta.json();
+        if (!resultado || resultado.ok !== true) throw new Error(resultado && resultado.error ? resultado.error : 'No se pudo guardar VERIFICADO.');
+
+        if (!datosActuales.estados) datosActuales.estados = {};
+        if (!datosActuales.estados.verificacion) datosActuales.estados.verificacion = {};
+        datosActuales.estados.verificacion[idPedido + '__' + idDetallePedido] = { idPedido, idDetallePedido, verificado };
+        if (producto) producto.classList.toggle('verificado', verificado);
+        actualizarContadorVerificacionPedido(pedido);
+        guardarEstadoSesionUi();
+        mostrarToast(verificado ? '✓ Producto marcado como VERIFICADO.' : 'Producto desmarcado.', false);
+      } catch (error) {
+        checkbox.checked = !verificado;
+        mostrarToast(error && error.message ? error.message : 'No se pudo guardar VERIFICADO.', true);
+      } finally {
+        checkbox.disabled = false;
+        if (producto) producto.classList.remove('guardando');
+      }
+    }
+
+    function actualizarContadorVerificacionPedido(pedido) {
+      if (!pedido) return;
+      const checks = Array.from(pedido.querySelectorAll('.check-verificacion'));
+      const verificados = checks.filter(check => check.checked).length;
+      const contador = pedido.querySelector('.verificacion-contador');
+      if (contador) contador.textContent = verificados + ' / ' + checks.length + ' verificados';
+    }
+
+
+    /************************************************************
+
+     * SABER SI PRODUCTO ESTÁ VERIFICADO
+
+     *
+
+     * No necesitamos calcular el hash en navegador.
+
+     * Buscamos por ID_PEDIDO + ID_DETALLE_PEDIDO.
+
+     ************************************************************/
+
+
+
+    function estaProductoVerificado(
+
+      idPedido,
+
+      idDetalle
+
+    ) {
+
+
+
+      const estados =
+
+        datosActuales &&
+
+        datosActuales.estados &&
+
+        datosActuales.estados.verificacion
+
+          ? datosActuales.estados.verificacion
+
+          : {};
+
+
+
+
+
+      return Object
+
+        .values(estados)
+
+        .some(
+
+          function(estado) {
+
+
+
+            return (
+
+              estado &&
+
+              String(
+
+                estado.idPedido || ''
+
+              ) ===
+
+              String(
+
+                idPedido || ''
+
+              ) &&
+
+              String(
+
+                estado.idDetallePedido || ''
+
+              ) ===
+
+              String(
+
+                idDetalle || ''
+
+              ) &&
+
+              estado.verificado === true
+
+            );
+
+
+
+          }
+
+        );
+
+
+
+    }
+
+
+
+
+
+    /************************************************************
+
+     * SABER SI TAREA ESTÁ PREPARADA
+
+     ************************************************************/
+
+
+
+    function estaPreparado(
+
+      idChecklist
+
+    ) {
+
+
+
+      if (!idChecklist) {
+
+        return false;
+
+      }
+
+
+
+
+
+      const estado =
+
+        datosActuales &&
+
+        datosActuales.estados &&
+
+        datosActuales.estados.preparacion
+
+          ? datosActuales
+
+              .estados
+
+              .preparacion[
+
+                idChecklist
+
+              ]
+
+          : null;
+
+
+
+
+
+      return !!(
+
+        estado &&
+
+        estado.preparado === true
+
+      );
+
+
+
+    }
+
+
+
+
+
+    /************************************************************
+
+     * SURTIMIENTO
+
+     ************************************************************/
+
+
+
+    function construirSurtimientoHtml(
+
+      surtimientos
+
+    ) {
+
+
+
+      let html =
+
+
+
+        '<div class="surtimiento">' +
+
+
+
+          '<div class="surtimiento-titulo">' +
+
+            '⚠️ SURTIMIENTO' +
+
+          '</div>';
+
+
+
+
+
+      surtimientos.forEach(
+
+        function(surtido) {
+
+
+
+          const descripcion =
+
+            surtido.descripcion ||
+
+            surtido.diseno ||
+
+            surtido.diseño ||
+
+            surtido.nombre ||
+
+            'Surtido';
+
+
+
+
+
+          const cantidad =
+
+            surtido.cantidad !== undefined
+
+              ? surtido.cantidad
+
+              : '';
+
+
+
+
+
+          html +=
+
+
+
+            '<div class="surtimiento-item">' +
+
+
+
+              escaparHtml(descripcion) +
+
+
+
+              (
+
+                cantidad !== ''
+
+                  ? ' — ' +
+
+                    escaparHtml(
+
+                      formatearNumero(
+
+                        cantidad
+
+                      )
+
+                    )
+
+                  : ''
+
+              ) +
+
+
+
+            '</div>';
+
+
+
+        }
+
+      );
+
+
+
+
+
+      html +=
+
+        '</div>';
+
+
+
+
+
+      return html;
+
+
+
+    }
+
+
+
+
+
+    /************************************************************
+
+     * OBTENER DATOS FLEXIBLES DEL BACKEND
+
+     ************************************************************/
+
+
+
+    function obtenerFamiliasCategoria(
+
+      categoria
+
+    ) {
+
+
+
+      if (
+
+        categoria &&
+
+        Array.isArray(categoria.familias)
+
+      ) {
+
+
+
+        return categoria.familias;
+
+
+
+      }
+
+
+
+
+
+      if (
+
+        categoria &&
+
+        Array.isArray(categoria.productos)
+
+      ) {
+
+
+
+        return categoria.productos;
+
+
+
+      }
+
+
+
+
+
+      return [];
+
+
+
+    }
+
+
+
+
+
+    function obtenerGruposPreparacion(
+
+      variante
+
+    ) {
+
+
+
+      if (
+
+        variante &&
+
+        Array.isArray(
+
+          variante.gruposPreparacion
+
+        )
+
+      ) {
+
+
+
+        return variante.gruposPreparacion;
+
+
+
+      }
+
+
+
+
+
+      return [];
+
+
+
+    }
+
+
+
+
+
+    function obtenerEtiquetaVariante(
+
+      variante
+
+    ) {
+
+
+
+      if (!variante) {
+
+        return 'VARIANTE';
+
+      }
+
+
+
+
+
+      if (variante.etiqueta) {
+
+
+
+        return limpiarEtiquetaTecnica(
+
+          variante.etiqueta
+
+        );
+
+
+
+      }
+
+
+
+
+
+      const partes = [
+
+
+
+        variante.marca,
+
+
+
+        variante.talla,
+
+
+
+        variante.modelo,
+
+
+
+        variante.diseno ||
+
+        variante.diseño
+
+
+
+      ]
+
+        .filter(
+
+          function(valor) {
+
+
+
+            if (!valor) {
+
+              return false;
+
+            }
+
+
+
+
+
+            const texto =
+
+              String(valor)
+
+                .trim();
+
+
+
+
+
+            if (!texto) {
+
+              return false;
+
+            }
+
+
+
+
+
+            return !esEtiquetaTecnica(
+
+              texto
+
+            );
+
+
+
+          }
+
+        );
+
+
+
+
+
+      return partes.length > 0
+
+        ? partes.join(' · ')
+
+        : 'VARIANTE';
+
+
+
+    }
+
+
+
+
+
+    function limpiarEtiquetaTecnica(
+
+      etiqueta
+
+    ) {
+
+
+
+      const partes =
+
+        String(etiqueta)
+
+          .split('·')
+
+          .map(
+
+            function(parte) {
+
+              return parte.trim();
+
+            }
+
+          )
+
+          .filter(
+
+            function(parte) {
+
+
+
+              return (
+
+                parte &&
+
+                !esEtiquetaTecnica(parte)
+
+              );
+
+
+
+            }
+
+          );
+
+
+
+
+
+      return partes.join(' · ');
+
+
+
+    }
+
+
+
+
+
+    function esEtiquetaTecnica(
+
+      texto
+
+    ) {
+
+
+
+      const normal =
+
+        String(texto || '')
+
+          .normalize('NFD')
+
+          .replace(
+
+            /[\u0300-\u036f]/g,
+
+            ''
+
+          )
+
+          .toUpperCase();
+
+
+
+
+
+      return (
+
+        normal.includes(
+
+          'ESPECIFICAR DISENO'
+
+        )
+
+      );
+
+
+
+    }
+
+
+
+
+
+    function obtenerTextoPreparacion(
+
+      grupo
+
+    ) {
+
+
+
+      if (!grupo) {
+
+        return '';
+
+      }
+
+
+
+
+
+      if (grupo.texto) {
+
+
+
+        return grupo.texto;
+
+
+
+      }
+
+
+
+
+
+      const cantidad =
+
+        grupo.cantidad !== undefined
+
+          ? formatearNumero(
+
+              grupo.cantidad
+
+            )
+
+          : '';
+
+
+
+
+
+      const unidad =
+
+        grupo.unidad || '';
+
+
+
+
+
+      const contenido =
+
+        grupo.contenido !== undefined &&
+
+        grupo.contenido !== null &&
+
+        grupo.contenido !== ''
+
+          ? grupo.contenido
+
+          : '';
+
+
+
+
+
+      let texto =
+
+        cantidad;
+
+
+
+
+
+      if (unidad) {
+
+
+
+        texto +=
+
+          (texto ? ' ' : '') +
+
+          unidad;
+
+
+
+      }
+
+
+
+
+
+      if (contenido) {
+
+
+
+        texto +=
+
+          ' x ' +
+
+          formatearNumero(
+
+            contenido
+
+          ) +
+
+          ' und';
+
+
+
+      }
+
+
+
+
+
+      return texto.trim();
+
+
+
+    }
+
+
+
+
+
+    function obtenerTextoPedidoPreparacion(
+
+      pedido
+
+    ) {
+
+
+
+      if (!pedido) {
+
+        return '';
+
+      }
+
+
+
+
+
+      if (pedido.texto) {
+
+
+
+        return pedido.texto;
+
+
+
+      }
+
+
+
+
+
+      if (pedido.textoPreparacion) {
+
+
+
+        return pedido.textoPreparacion;
+
+
+
+      }
+
+
+
+
+
+      const cantidad =
+
+        pedido.cantidad !== undefined
+
+          ? formatearNumero(
+
+              pedido.cantidad
+
+            )
+
+          : '';
+
+
+
+
+
+      const unidad =
+
+        pedido.unidad || '';
+
+
+
+
+
+      const contenido =
+
+        pedido.contenido !== undefined &&
+
+        pedido.contenido !== null &&
+
+        pedido.contenido !== ''
+
+          ? pedido.contenido
+
+          : '';
+
+
+
+
+
+      let texto = cantidad;
+
+
+
+
+
+      if (unidad) {
+
+
+
+        texto +=
+
+          (texto ? ' ' : '') +
+
+          unidad;
+
+
+
+      }
+
+
+
+
+
+      if (contenido) {
+
+
+
+        texto +=
+
+          ' x ' +
+
+          formatearNumero(
+
+            contenido
+
+          ) +
+
+          ' und';
+
+
+
+      }
+
+
+
+
+
+      return texto.trim();
+
+
+
+    }
+
+
+
+
+
+    function obtenerTextoCliente(
+
+      cliente
+
+    ) {
+
+
+
+      if (
+
+        cliente === null ||
+
+        cliente === undefined
+
+      ) {
+
+
+
+        return 'CLIENTE';
+
+
+
+      }
+
+
+
+
+
+      if (
+
+        typeof cliente === 'object'
+
+      ) {
+
+
+
+        return (
+
+          cliente.nombre ||
+
+          cliente.NOMBRE ||
+
+          cliente.razonSocial ||
+
+          cliente.idCliente ||
+
+          'CLIENTE'
+
+        );
+
+
+
+      }
+
+
+
+
+
+      return String(cliente);
+
+
+
+    }
+
+
+
+
+
+    function obtenerIdDetallePedido(
+
+      producto
+
+    ) {
+
+
+
+      if (!producto) {
+
+        return '';
+
+      }
+
+
+
+
+
+      return String(
+
+
+
+        producto.idDetallePedido ||
+
+
+
+        producto.idDetalle ||
+
+
+
+        producto.IDDETALLEVENTA ||
+
+
+
+        producto.idDetalleVenta ||
+
+
+
+        ''
+
+
+
+      );
+
+
+
+    }
+
+
+
+
+
+    function obtenerNombreProductoPedido(
+
+      producto
+
+    ) {
+
+
+
+      if (!producto) {
+
+        return 'PRODUCTO';
+
+      }
+
+
+
+
+
+      const productoBase =
+
+
+
+        producto.producto ||
+
+
+
+        producto.nombreProducto ||
+
+
+
+        producto.descripcionProducto ||
+
+
+
+        producto.descripcion ||
+
+
+
+        'PRODUCTO';
+
+
+
+
+
+      const variante =
+
+
+
+        producto.etiqueta ||
+
+
+
+        producto.etiquetaVariante ||
+
+
+
+        producto.variante ||
+
+
+
+        '';
+
+
+
+
+
+      if (
+
+        variante &&
+
+        String(variante).trim() !==
+
+        String(productoBase).trim()
+
+      ) {
+
+
+
+        return (
+
+          productoBase +
+
+          ' · ' +
+
+          limpiarEtiquetaTecnica(
+
+            variante
+
+          )
+
+        );
+
+
+
+      }
+
+
+
+
+
+      return productoBase;
+
+
+
+    }
+
+
+
+
+
+    function obtenerCantidadProductoPedido(
+
+      producto
+
+    ) {
+
+
+
+      if (!producto) {
+
+        return '';
+
+      }
+
+
+
+
+
+      if (producto.texto) {
+
+
+
+        return producto.texto;
+
+
+
+      }
+
+
+
+
+
+      if (producto.textoPreparacion) {
+
+
+
+        return producto.textoPreparacion;
+
+
+
+      }
+
+
+
+      if (producto.preparacion) {
+
+
+
+        return producto.preparacion;
+
+
+
+      }
+
+
+
+
+
+      if (producto.cantidadTexto) {
+
+
+
+        return producto.cantidadTexto;
+
+
+
+      }
+
+
+
+
+
+      const cantidad =
+
+        producto.cantidadUnidad !== undefined
+
+          ? producto.cantidadUnidad
+
+          : producto.cantidad;
+
+
+
+
+
+      const totalUnidades =
+
+        producto.totalUnidades !== undefined
+
+          ? producto.totalUnidades
+
+          : producto.cantidadSunat;
+
+
+
+
+
+      let texto = '';
+
+
+
+
+
+      if (
+
+        cantidad !== undefined &&
+
+        cantidad !== null &&
+
+        cantidad !== ''
+
+      ) {
+
+
+
+        texto +=
+
+          formatearNumero(
+
+            cantidad
+
+          );
+
+
+
+      }
+
+
+
+
+
+      if (
+
+        producto.unidad
+
+      ) {
+
+
+
+        texto +=
+
+          (texto ? ' ' : '') +
+
+          producto.unidad;
+
+
+
+      }
+
+
+
+
+
+      if (
+
+        totalUnidades !== undefined &&
+
+        totalUnidades !== null &&
+
+        totalUnidades !== ''
+
+      ) {
+
+
+
+        if (texto) {
+
+
+
+          texto +=
+
+            ' · ';
+
+
+
+        }
+
+
+
+
+
+        texto +=
+
+          formatearNumero(
+
+            totalUnidades
+
+          ) +
+
+          ' unidades';
+
+
+
+      }
+
+
+
+
+
+      return texto;
+
+
+
+    }
+
+
+
+
+
+    function obtenerSurtimientos(
+
+      objeto
+
+    ) {
+
+
+
+      if (!objeto) {
+
+        return [];
+
+      }
+
+
+
+
+
+      if (
+
+        Array.isArray(
+
+          objeto.surtimientos
+
+        )
+
+      ) {
+
+
+
+        return objeto.surtimientos;
+
+
+
+      }
+
+
+
+
+
+      if (
+
+        Array.isArray(
+
+          objeto.surtido
+
+        )
+
+      ) {
+
+
+
+        return objeto.surtido;
+
+
+
+      }
+
+
+
+
+
+      return [];
+
+
+
+    }
+
+
+
+
+
+    function obtenerObservacion(
+
+      objeto
+
+    ) {
+
+
+
+      if (!objeto) {
+
+        return '';
+
+      }
+
+
+
+
+
+      const valor =
+
+
+
+        objeto.observacion ||
+
+
+
+        objeto.observación ||
+
+
+
+        objeto.OBSERVACION ||
+
+
+
+        '';
+
+
+
+
+
+      const texto =
+
+        String(valor || '')
+
+          .trim();
+
+
+
+
+
+      if (
+
+        !texto ||
+
+        texto === '-'
+
+      ) {
+
+
+
+        return '';
+
+
+
+      }
+
+
+
+
+
+      return texto;
+
+
+
+    }
+
+
+
+
+
+    function obtenerObservacionGeneral(
+
+      pedido
+
+    ) {
+
+
+
+      if (!pedido) {
+
+        return '';
+
+      }
+
+
+
+
+
+      const valor =
+
+
+
+        pedido.observacionGeneral ||
+
+
+
+        pedido.observacion ||
+
+
+
+        '';
+
+
+
+
+
+      const texto =
+
+        String(valor || '')
+
+          .trim();
+
+
+
+
+
+      if (
+
+        !texto ||
+
+        texto === '-'
+
+      ) {
+
+
+
+        return '';
+
+
+
+      }
+
+
+
+
+
+      return texto;
+
+
+
+    }
+
+
+
+
+
+    /************************************************************
+
+     * CONTADORES POR CATEGORÍA
+
+     ************************************************************/
+
+
+
+    function contarTareasCategoria(
+
+      categoria
+
+    ) {
+
+
+
+      let total = 0;
+
+
+
+
+
+      obtenerFamiliasCategoria(
+
+        categoria
+
+      ).forEach(
+
+        function(familia) {
+
+
+
+          const variantes =
+
+            Array.isArray(familia.variantes)
+
+              ? familia.variantes
+
+              : [];
+
+
+
+
+
+          variantes.forEach(
+
+            function(variante) {
+
+
+
+              total +=
+
+                obtenerGruposPreparacion(
+
+                  variante
+
+                ).length;
+
+
+
+            }
+
+          );
+
+
+
+        }
+
+      );
+
+
+
+
+
+      return total;
+
+
+
+    }
+
+
+
+
+
+    function contarPreparadosCategoria(
+
+      categoria
+
+    ) {
+
+
+
+      let total = 0;
+
+
+
+
+
+      obtenerFamiliasCategoria(
+
+        categoria
+
+      ).forEach(
+
+        function(familia) {
+
+
+
+          const variantes =
+
+            Array.isArray(familia.variantes)
+
+              ? familia.variantes
+
+              : [];
+
+
+
+
+
+          variantes.forEach(
+
+            function(variante) {
+
+
+
+              obtenerGruposPreparacion(
+
+                variante
+
+              ).forEach(
+
+                function(grupo) {
+
+
+
+                  if (
+
+                    estaPreparado(
+
+                      grupo.idChecklist
+
+                    )
+
+                  ) {
+
+
+
+                    total++;
+
+
+
+                  }
+
+
+
+                }
+
+              );
+
+
+
+            }
+
+          );
+
+
+
+        }
+
+      );
+
+
+
+
+
+      return total;
+
+
+
+    }
+
+
+
+
+
+    /************************************************************
+
+     * TABS
+
+     ************************************************************/
+
+
+
+    function mostrarTab(
+
+      tab
+
+    ) {
+
+
+
+      tabActual = tab;
+
+
+
+
+
+      const preparacion =
+
+        document.getElementById(
+
+          'vistaPreparacion'
+
+        );
+
+
+
+
+
+      const pedidos =
+
+        document.getElementById(
+
+          'vistaPedidos'
+
+        );
+
+
+
+
+
+      const botonPreparacion =
+
+        document.getElementById(
+
+          'tabPreparacion'
+
+        );
+
+
+
+
+
+      const botonPedidos =
+
+        document.getElementById(
+
+          'tabPedidos'
+
+        );
+
+
+
+
+
+      if (tab === 'pedidos') {
+
+
+
+        preparacion.style.display =
+
+          'none';
+
+
+
+
+
+        pedidos.style.display =
+
+          'block';
+
+
+
+
+
+        botonPreparacion
+
+          .classList
+
+          .remove('activo');
+
+
+
+
+
+        botonPedidos
+
+          .classList
+
+          .add('activo');
+
+
+
+      }
+
+
+
+      else {
+
+
+
+        preparacion.style.display =
+
+          'block';
+
+
+
+
+
+        pedidos.style.display =
+
+          'none';
+
+
+
+
+
+        botonPreparacion
+
+          .classList
+
+          .add('activo');
+
+
+
+
+
+        botonPedidos
+
+          .classList
+
+          .remove('activo');
+
+
+
+      }
+
+
+
+      guardarEstadoSesionUi();
+
+    }
+
+
+
+
+
+    /************************************************************
+
+     * DESPLEGABLES
+
+     ************************************************************/
+
+
+
+    function toggleCategoria(elemento) {
+      elemento.closest('.categoria').classList.toggle('cerrada');
+      guardarEstadoSesionUi();
+    }
+
+
+
+
+
+    function toggleFamilia(elemento) {
+      elemento.closest('.familia').classList.toggle('cerrada');
+      guardarEstadoSesionUi();
+    }
+
+
+
+
+
+    function toggleVariante(elemento) {
+      elemento.closest('.variante').classList.toggle('cerrada');
+      guardarEstadoSesionUi();
+    }
+
+
+
+
+
+    function togglePedido(elemento) {
+      elemento.closest('.pedido').classList.toggle('cerrado');
+      guardarEstadoSesionUi();
+    }
+
+
+
+
+
+    function obtenerEstadoSesionUi() {
+      try { return JSON.parse(sessionStorage.getItem(CLAVE_SESION_UI) || '{}'); }
+      catch (error) { return {}; }
+    }
+
+    function guardarEstadoSesionUi() {
+      try {
+        const estado = obtenerEstadoSesionUi();
+        estado.dia = diaActual; estado.tab = tabActual; estado.scrollY = window.scrollY || 0;
+        if (datosActuales) {
+          estado.desplegables = {
+            categorias: Array.from(document.querySelectorAll('.categoria')).map(el => el.classList.contains('cerrada')),
+            familias: Array.from(document.querySelectorAll('.familia')).map(el => el.classList.contains('cerrada')),
+            variantes: Array.from(document.querySelectorAll('.variante')).map(el => el.classList.contains('cerrada')),
+            pedidos: Array.from(document.querySelectorAll('.pedido')).map(el => el.classList.contains('cerrado'))
+          };
+        }
+        sessionStorage.setItem(CLAVE_SESION_UI, JSON.stringify(estado));
+      } catch (error) {}
+    }
+
+    function restaurarDesplegablesSesion() {
+      const d = obtenerEstadoSesionUi().desplegables || {};
+      [['.categoria','cerrada',d.categorias],['.familia','cerrada',d.familias],['.variante','cerrada',d.variantes],['.pedido','cerrado',d.pedidos]].forEach(config => {
+        const estados = Array.isArray(config[2]) ? config[2] : [];
+        Array.from(document.querySelectorAll(config[0])).forEach((el,i) => { if (i < estados.length) el.classList.toggle(config[1], estados[i] === true); });
+      });
+    }
+
+    function restaurarScrollSesion() {
+      const y = Number(obtenerEstadoSesionUi().scrollY || 0);
+      requestAnimationFrame(() => window.scrollTo(0, y));
+    }
+
+    let temporizadorScrollSesion = null;
+    window.addEventListener('scroll', function() {
+      clearTimeout(temporizadorScrollSesion);
+      temporizadorScrollSesion = setTimeout(guardarEstadoSesionUi, 120);
+    }, { passive:true });
+
+    /************************************************************
+
+     * UTILIDADES
+
+     ************************************************************/
+
+
+
+    function formatearNumero(
+
+      numero
+
+    ) {
+
+
+
+      const n =
+
+        Number(numero);
+
+
+
+
+
+      if (
+
+        Number.isNaN(n)
+
+      ) {
+
+
+
+        return String(
+
+          numero ?? ''
+
+        );
+
+
+
+      }
+
+
+
+
+
+      return n.toLocaleString(
+
+        'es-PE',
+
+        {
+
+          maximumFractionDigits: 3
+
+        }
+
+      );
+
+
+
+    }
+
+
+
+
+
+    function escaparHtml(
+
+      texto
+
+    ) {
+
+
+
+      if (
+
+        texto === null ||
+
+        texto === undefined
+
+      ) {
+
+
+
+        return '';
+
+
+
+      }
+
+
+
+
+
+      return String(texto)
+
+
+
+        .replace(
+
+          /&/g,
+
+          '&amp;'
+
+        )
+
+
+
+        .replace(
+
+          /</g,
+
+          '&lt;'
+
+        )
+
+
+
+        .replace(
+
+          />/g,
+
+          '&gt;'
+
+        )
+
+
+
+        .replace(
+
+          /"/g,
+
+          '&quot;'
+
+        )
+
+
+
+        .replace(
+
+          /'/g,
+
+          '&#039;'
+
+        );
+
+
+
+    }
+
+
+
+
+
+    function escaparAtributo(
+
+      texto
+
+    ) {
+
+
+
+      return escaparHtml(
+
+        texto
+
+      );
+
+
+
+    }
+
+
+
+
+
+    function obtenerMensajeError(
+
+      error
+
+    ) {
+
+
+
+      if (!error) {
+
+
+
+        return 'Error desconocido.';
+
+
+
+      }
+
+
+
+
+
+      if (error.message) {
+
+
+
+        return error.message;
+
+
+
+      }
+
+
+
+
+
+      return String(error);
+
+
+
+    }
+
+
+
+
+
+    function mostrarError(
+
+      mensaje
+
+    ) {
+
+
+
+      const elemento =
+
+        document.getElementById(
+
+          'error'
+
+        );
+
+
+
+
+
+      elemento.textContent =
+
+        'Error: ' +
+
+        mensaje;
+
+
+
+
+
+      elemento.style.display =
+
+        'block';
+
+
+
+    }
+
+
+
+
+
+    function ocultarError() {
+
+
+
+      const elemento =
+
+        document.getElementById(
+
+          'error'
+
+        );
+
+
+
+
+
+      elemento.textContent = '';
+
+
+
+      elemento.style.display =
+
+        'none';
+
+
+
+    }
+
+
+
+
+
+    function mostrarToast(
+
+      mensaje,
+
+      esError
+
+    ) {
+
+
+
+      const toast =
+
+        document.getElementById(
+
+          'toast'
+
+        );
+
+
+
+
+
+      if (toastTimer) {
+
+
+
+        clearTimeout(
+
+          toastTimer
+
+        );
+
+
+
+      }
+
+
+
+
+
+      toast.textContent =
+
+        mensaje;
+
+
+
+
+
+      toast.classList.toggle(
+
+        'error-toast',
+
+        !!esError
+
+      );
+
+
+
+
+
+      toast.style.display =
+
+        'block';
+
+
+
+
+
+      toastTimer =
+
+        setTimeout(
+
+          function() {
+
+
+
+            toast.style.display =
+
+              'none';
+
+
+
+          },
+
+          2200
+
+        );
+
+
+
+    }
+
+
+
+
+    /************************************************************
+     * FECHAS DEL SELECTOR Y CARGA INICIAL
+     ************************************************************/
+
+    function actualizarFechasBotones() {
+
+      const partes = new Intl.DateTimeFormat(
+        'en-CA',
+        {
+          timeZone: 'America/Lima',
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit'
+        }
+      ).formatToParts(new Date());
+
+      const mapa = {};
+
+      partes.forEach(function(parte) {
+        mapa[parte.type] = parte.value;
+      });
+
+      const baseUtc = new Date(
+        Date.UTC(
+          Number(mapa.year),
+          Number(mapa.month) - 1,
+          Number(mapa.day),
+          12, 0, 0
+        )
+      );
+
+      for (let dia = 0; dia <= 2; dia++) {
+
+        const fecha = new Date(
+          baseUtc.getTime() +
+          (dia * 24 * 60 * 60 * 1000)
+        );
+
+        const texto =
+          new Intl.DateTimeFormat(
+            'es-PE',
+            {
+              timeZone: 'UTC',
+              day: '2-digit',
+              month: '2-digit',
+              year: 'numeric'
+            }
+          ).format(fecha);
+
+        const elemento =
+          document.getElementById(
+            'fechaBoton' + dia
+          );
+
+        if (elemento) {
+          elemento.textContent = texto;
+        }
+
+      }
+
+    }
+
+
+    function iniciarChecklistDisan() {
+      actualizarFechasBotones();
+      const estadoSesion = obtenerEstadoSesionUi();
+      const diaGuardado = [0,1,2].includes(Number(estadoSesion.dia)) ? Number(estadoSesion.dia) : 0;
+      tabActual = estadoSesion.tab === 'pedidos' ? 'pedidos' : 'preparacion';
+      const botones = document.querySelectorAll('.boton-dia');
+      const boton = botones[diaGuardado] || botones[0];
+      if (boton) seleccionarDia(diaGuardado, boton);
+    }
+
+
+    if (document.readyState === 'loading') {
+
+      document.addEventListener(
+        'DOMContentLoaded',
+        iniciarChecklistDisan
+      );
+
+    }
+    else {
+
+      iniciarChecklistDisan();
+
+    }
+
+
+  </script>
+
+
+
+</body>
+
+
+
+</html>
