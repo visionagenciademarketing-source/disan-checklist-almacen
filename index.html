@@ -1823,41 +1823,32 @@
 
 
 
-      fetch(
-        API_CHECKLIST_URL +
-        '?accion=checklist&dia=' +
-        encodeURIComponent(diaActual),
-        {
-          method: 'GET',
-          cache: 'no-store'
-        }
-      )
-        .then(function(respuesta) {
-          if (!respuesta.ok) {
-            throw new Error(
-              'La API respondió HTTP ' + respuesta.status
-            );
-          }
-          return respuesta.json();
-        })
+      cargarChecklistJsonp(diaActual)
         .then(function(respuestaApi) {
+
           document
             .getElementById('cargando')
             .style.display = 'none';
 
           if (!respuestaApi || respuestaApi.ok !== true) {
+
             throw new Error(
               respuestaApi && respuestaApi.error
                 ? respuestaApi.error
                 : 'La API no devolvió datos válidos.'
             );
+
           }
 
           datosActuales = respuestaApi.datos;
+
           normalizarDatosLocales();
+
           renderizarTodo();
+
         })
         .catch(function(error) {
+
           document
             .getElementById('cargando')
             .style.display = 'none';
@@ -1865,12 +1856,107 @@
           mostrarError(
             obtenerMensajeError(error)
           );
+
         });
 
     }
 
 
 
+
+
+    /************************************************************
+     * CARGAR CHECKLIST DESDE GITHUB MEDIANTE JSONP
+     ************************************************************/
+
+    function cargarChecklistJsonp(dia) {
+
+      return new Promise(function(resolve, reject) {
+
+        const callback =
+          '__disanChecklist_' +
+          Date.now() +
+          '_' +
+          Math.random().toString(36).slice(2);
+
+        const script =
+          document.createElement('script');
+
+        let terminado = false;
+
+        const limpiar = function() {
+
+          if (terminado) return;
+
+          terminado = true;
+
+          try {
+            delete window[callback];
+          }
+          catch (e) {
+            window[callback] = undefined;
+          }
+
+          if (script.parentNode) {
+            script.parentNode.removeChild(script);
+          }
+
+        };
+
+        const temporizador =
+          setTimeout(function() {
+
+            limpiar();
+
+            reject(
+              new Error(
+                'La API tardó demasiado en responder.'
+              )
+            );
+
+          }, 30000);
+
+        window[callback] =
+          function(respuestaApi) {
+
+            clearTimeout(temporizador);
+
+            limpiar();
+
+            resolve(respuestaApi);
+
+          };
+
+        script.onerror =
+          function() {
+
+            clearTimeout(temporizador);
+
+            limpiar();
+
+            reject(
+              new Error(
+                'No se pudo conectar con la API de DISAN.'
+              )
+            );
+
+          };
+
+        script.src =
+          API_CHECKLIST_URL +
+          '?accion=checklist' +
+          '&dia=' +
+          encodeURIComponent(dia) +
+          '&callback=' +
+          encodeURIComponent(callback) +
+          '&_=' +
+          Date.now();
+
+        document.head.appendChild(script);
+
+      });
+
+    }
 
 
     /************************************************************
