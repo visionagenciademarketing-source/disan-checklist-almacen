@@ -6034,6 +6034,30 @@
 
 
 
+      // BackendChecklist actual: propiedad en singular.
+      if (
+
+        Array.isArray(
+
+          objeto.surtimiento
+
+        )
+
+      ) {
+
+
+
+        return objeto.surtimiento;
+
+
+
+      }
+
+
+
+
+
+      // Compatibilidad con estructuras anteriores.
       if (
 
         Array.isArray(
